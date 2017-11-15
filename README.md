@@ -1,6 +1,6 @@
 # pyS3-volume
 
-This is a python port of the s3-volume-docker-plugin [https://github.com/chooban/s3-docker-volume-plugin] with some differences.
+This is a python port of the s3-volume-docker-plugin https://github.com/chooban/s3-docker-volume-plugin with some differences.
 
 Basically this plugin creates a temporary directory on the host. The directory contents are in turn synchronised to an S3 bucket specified during volume creation.
 
