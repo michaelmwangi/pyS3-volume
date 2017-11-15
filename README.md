@@ -24,7 +24,7 @@ We also make use of systemd services according to the service file under systemd
 
 1. Create a docker volume
 
-### docker volume create --driver=pyS3-volume --name s3vol --opts bucket=<bucketname> 
+### docker volume create --driver=pyS3-volume --name s3vol --opts bucket=[bucketname]
 2. Attach docker volume to container
 ### docker run --rm -ti -v s3vol:/S3 ubuntu bash
 This will create a volume named **s3vol** and any file added to the directory **S3** will be mirrored at the specified **bucketname**
