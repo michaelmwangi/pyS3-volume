@@ -1,0 +1,15 @@
+[Unit]
+Description=Docker volume plugin for S3
+Before=docker.service
+After=network.target
+Requires=docker.service
+
+[Service]
+ExecStart=/mnt/programming/ionic/code/docker-volume/app.py
+StandardOutput=syslog
+SyslogIdentifier=s3volume
+User=root
+Group=docker
+
+[Install]
+WantedBy=multi-user.target
