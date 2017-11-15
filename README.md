@@ -6,6 +6,9 @@ Basically this plugin creates a temporary directory on the host. The directory c
 
 This plugin makes use of **s3cmd** to sync with S3 and **bottle**, **cherrypy** as the web framework and web server respectively. The server binds by default to localhost and on port 8090. The defaults are trivial to change on the code base.
 
+We also make use of systemd services according to the service file under systemdconfig directory.
+
+
 # Requirements
 
 1. Python 3
