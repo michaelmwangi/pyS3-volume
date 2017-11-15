@@ -1,15 +1,19 @@
 #!/usr/bin/python3
 
+import os
 import json
 import shutil
+import time
 import tempfile
 import logging 
+import threading
+import subprocess
 import logging.handlers
 from bottle import post, run, request, get
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler('/mnt/programming/ionic/code/docker-volume/app.log')
+handler = logging.FileHandler('{}/app.log'.format(os.getcwd()))
 handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -17,14 +21,35 @@ logger.addHandler(handler)
 
 volume_mapping = dict()
 
+
 def process_request(reqbody):
     raw_opts = reqbody.read().decode()
     opts = json.loads(raw_opts)
     return opts
 
+def delete_dir(dir_path):
+    shutil.rmtree(dir_path)
+    logger.debug('Removed %s volume', dir_path)
+
+def s3_sync():
+    global volume_mapping
+    
+    while True:        
+        time.sleep(15)        
+        vols_maps = volume_mapping.copy()
+        for vol_name, mount_dict in vols_maps.items():
+            bucketname = list(mount_dict.keys())[0]
+            path = list(mount_dict.values())[0]
+            try:
+                logger.debug("Pushing %s to %s", path, bucketname)
+                subprocess.check_call(['s3cmd', 'sync', path, '--delete-removed', 's3://{}'.format(bucketname)])
+                logger.debug("Done pushing")
+            except Exception as exc:
+                logger.error("Error pushing files to S3 error: %s ", exc)
+            
+
 @post('/Plugin.Activate')
 def plugin_activate():
-    logging.info("Activating S3 volume .....")
     payload = {'Implements': ['VolumeDriver']}
     return json.dumps(payload)
 
@@ -35,7 +60,7 @@ def volume_driver_create():
     buck_name = Opts.get('Opts').get('bucket', None)
     err_msg = ''
     if not buck_name or not vol_name:
-        err_msg = "Mandatory bucket name not passed"
+        err_msg = "Mandatory params name not passed"
         logger.error("Volume creation error mandatory params not passed Name: %s , Bucket: %s", vol_name, buck_name)
     else:
         dir_path = tempfile.mkdtemp()
@@ -50,12 +75,13 @@ def volume_driver_create():
 def volume_driver_remove():
     Opts = process_request(request.body)
     vol_name = Opts.get('Name', None)
+    err_msg = ''
+    logger.debug("proceeding to remove volume %s", vol_name)
     if vol_name:
         global volume_mapping
         dir_paths = volume_mapping[vol_name]
         for path in dir_paths.values():
-            shutil.rmtree(path)
-            logger.debug('Removed %s volume', path)
+            delete_dir(path)
     else:
         err_msg = 'Error volume name not passed'
         logger.error('Volume name was not passed!')
@@ -107,7 +133,6 @@ def volume_get():
         },
         'Err': ''
     }
-    logger.info(json.dumps(payload))
     return json.dumps(payload)
 
 @post('/VolumeDriver.List')
@@ -115,7 +140,6 @@ def volume_driver_list():
     global volume_mapping
     items = list()
     for key, mounts in volume_mapping.items():
-        mounts = mounts.values()[0]
         mount_path = list(mounts.values())[0]
         items.append({"Name": key, "Mountpoint": mount_path})
     
@@ -131,4 +155,6 @@ def volume_driver_list():
 def index():
     return "Hello"  
 
+s3_sync = threading.Thread(target=s3_sync)
+s3_sync.start()
 run(host='127.0.0.1', port="8090", debug=True)

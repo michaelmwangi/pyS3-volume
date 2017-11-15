@@ -5,9 +5,7 @@ After=network.target
 Requires=docker.service
 
 [Service]
-ExecStart=/mnt/programming/ionic/code/docker-volume/app.py
-StandardOutput=syslog
-SyslogIdentifier=s3volume
+ExecStart=/opt/pyS3volume/app.py
 User=root
 Group=docker
 
