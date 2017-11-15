@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 volume_mapping = dict()
-
+SLEEP_S = 15
 
 def process_request(reqbody):
     raw_opts = reqbody.read().decode()
@@ -35,7 +35,7 @@ def s3_sync():
     global volume_mapping
     
     while True:        
-        time.sleep(15)        
+        time.sleep(SLEEP_S)        
         vols_maps = volume_mapping.copy()
         for vol_name, mount_dict in vols_maps.items():
             bucketname = list(mount_dict.keys())[0]
@@ -157,4 +157,4 @@ def index():
 
 s3_sync = threading.Thread(target=s3_sync)
 s3_sync.start()
-run(host='127.0.0.1', port="8090")
+run(host='127.0.0.1', port="8090", server='cherrypy')
