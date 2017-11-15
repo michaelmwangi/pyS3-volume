@@ -76,7 +76,7 @@ def volume_driver_mount():
             err_msg = 'Volume has not been mounted on the filesystem yet'
             logger.error('Volume %s does not have a mapping on the file system yet', vol_name)
         else:        
-            mount_path = mapping.values()[0]
+            mount_path = list(mapping.values())[0]
     else:
         logger.error("Volume name not passed")
         err_msg = 'Volume name not passed'
@@ -94,22 +94,20 @@ def volume_driver_unmount():
 @post('/VolumeDriver.Get')
 def volume_get():
     global volume_mapping
-    mappings = volume_mapping.values()
+    mappings = list(volume_mapping.values())[0]
     path = ''
-    name = volume_mapping.keys()[0]
-
+    name = list(volume_mapping.keys())[0]
     if mappings:
-        path = mappings.values()[0]
+        path = list(mappings.values())[0]
 
     payload = {
         'Volume': {
             'Name': name,
-            'Mountpoint': path,
-            'status': {}
+            'Mountpoint': path
         },
         'Err': ''
     }
-
+    logger.info(json.dumps(payload))
     return json.dumps(payload)
 
 @post('/VolumeDriver.List')
@@ -117,7 +115,8 @@ def volume_driver_list():
     global volume_mapping
     items = list()
     for key, mounts in volume_mapping.items():
-        mount_path = mounts.values()[0]
+        mounts = mounts.values()[0]
+        mount_path = list(mounts.values())[0]
         items.append({"Name": key, "Mountpoint": mount_path})
     
     payload = {
