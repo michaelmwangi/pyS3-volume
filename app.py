@@ -157,4 +157,4 @@ def index():
 
 s3_sync = threading.Thread(target=s3_sync)
 s3_sync.start()
-run(host='127.0.0.1', port="8090", debug=True)
+run(host='127.0.0.1', port="8090")
