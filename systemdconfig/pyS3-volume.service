@@ -5,7 +5,7 @@ After=network.target
 Requires=docker.service
 
 [Service]
-ExecStart=/opt/pyS3volume/app.py
+ExecStart=/opt/pyS3-volume/app.py
 User=root
 Group=docker
 
