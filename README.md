@@ -6,7 +6,7 @@ Basically this plugin creates a temporary directory on the host. The directory c
 
 This plugin makes use of **s3cmd** to sync with S3 and **bottle**, **cherrypy** as the web framework and web server respectively. The server binds by default to localhost and on port 8090. The defaults are trivial to change on the code base.
 
-We also make use of systemd services according to the service file under systemdconfig directory.
+We also make use of systemd services according to the service file under systemdconfig directory. 
 
 
 # Requirements
@@ -28,3 +28,7 @@ We also make use of systemd services according to the service file under systemd
 2. Attach docker volume to container
 ### docker run --rm -ti -v s3vol:/S3 ubuntu bash
 This will create a volume named **s3vol** and any file added to the directory **S3** will be mirrored at the specified **bucketname**
+
+# Debug
+
+Debug info can be retrieved from the log file at the working directory of the plugin by default at **/opt/pyS3-volume**. 
