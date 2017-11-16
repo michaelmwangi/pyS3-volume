@@ -139,6 +139,16 @@ def volume_get():
     }
     return json.dumps(payload)
 
+@post('/VolumeDriver.Capabilities')
+def volume_driver_capabilities():
+    payload = {
+        "Capabilities": {
+            "Scope": "global"
+        }
+    }
+    
+    return json.dumps(payload)
+
 @post('/VolumeDriver.List')
 def volume_driver_list():
     global volume_mapping
