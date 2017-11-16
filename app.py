@@ -11,17 +11,19 @@ import subprocess
 import logging.handlers
 from bottle import post, run, request, get
 
+volume_mapping = dict()
+SLEEP_S = 15
+
+INSTALL_DIR = '/opt/pyS3-volume'
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-log_path = os.path.join(os.getcwd(), 'app.log')
+log_path = os.path.join(INSTALL_DIR, 'app.log')
 handler = logging.FileHandler(log_path)
 handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-volume_mapping = dict()
-SLEEP_S = 15
 
 def process_request(reqbody):
     raw_opts = reqbody.read().decode()
@@ -83,6 +85,7 @@ def volume_driver_remove():
         dir_paths = volume_mapping[vol_name]
         for path in dir_paths.values():
             delete_dir(path)
+        del volume_mapping[vol_name]
     else:
         err_msg = 'Error volume name not passed'
         logger.error('Volume name was not passed!')
@@ -121,15 +124,15 @@ def volume_driver_unmount():
 @post('/VolumeDriver.Get')
 def volume_get():
     global volume_mapping
-    mappings = list(volume_mapping.values())[0]
-    path = ''
-    name = list(volume_mapping.keys())[0]
-    if mappings:
-        path = list(mappings.values())[0]
+    path = ''    
+    Opts = process_request(request.body)
+    vol_name = Opts.get('Name', None)
+    if vol_name:
+        path = list(volume_mapping[vol_name].values())[0]
 
     payload = {
         'Volume': {
-            'Name': name,
+            'Name': vol_name,
             'Mountpoint': path
         },
         'Err': ''
