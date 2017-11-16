@@ -34,4 +34,6 @@ This will create a volume named **s3vol** and any file added to the directory **
 
 Debug info can be retrieved from the log file at the working directory of the plugin by default at **/opt/pyS3-volume**. or **/var/log/syslog**
 
+If your bucket name has multiple folders make sure to append the trailing slash at the end.
+
 To check the status of the service run **systemctl status pyS3-volume.service**
