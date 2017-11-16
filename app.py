@@ -40,7 +40,7 @@ def s3_sync():
         vols_maps = volume_mapping.copy()
         for vol_name, mount_dict in vols_maps.items():
             bucketname = list(mount_dict.keys())[0]
-            path = list(mount_dict.values())[0]
+            path = list(mount_dict.values())[0] + '/' # add the trailing slash to indicate this is a dir
             try:
                 logger.debug("Pushing %s to %s", path, bucketname)
                 subprocess.check_call(['s3cmd', 'sync', path, '--delete-removed', 's3://{}'.format(bucketname)])
