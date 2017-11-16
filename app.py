@@ -13,7 +13,8 @@ from bottle import post, run, request, get
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler('{}/app.log'.format(os.getcwd()))
+log_path = os.path.join(os.getcwd(), 'app.log')
+handler = logging.FileHandler(log_path)
 handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
