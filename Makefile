@@ -7,5 +7,5 @@ install:
 			cp dockerconfig/pyS3-volume.json /etc/docker/plugins/
 			cp systemdconfig/pyS3-volume.service /etc/systemd/system/
 			chmod u+x /opt/pyS3-volume/app.py
-			"*** Done installing: run systemctl start pyS3-volume to start the daemon ***"
+			#"*** Done installing: run systemctl start pyS3-volume to start the daemon ***"
 
